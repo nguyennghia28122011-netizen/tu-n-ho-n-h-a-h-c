@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vu tru hoa hoc</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:radial-gradient(circle,#12385e,#030611 75%);
+ color:white;font-family:Arial;text-align:center;overflow-x:hidden
+}
+h1{color:#72f6ff;text-shadow:0 0 20px cyan;margin:24px 5px 8px}
+p{color:#c6eaff}
+button{
+ background:#103d5b;color:white;border:1px solid cyan;
+ padding:11px 16px;border-radius:22px;margin:5px;cursor:pointer
+}
+#stars{position:fixed;inset:0;width:100%;height:100%;z-index:-1}
+#table{
+ display:grid;grid-template-columns:repeat(18,48px);
+ gap:3px;width:max-content;margin:20px auto;padding:8px
+}
+.wrap{overflow-x:auto}
+.el{
+ width:48px;height:55px;border:1px solid #58d9ef;
+ border-radius:6px;position:relative;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ background:linear-gradient(145deg,#145c80,#17264b);
+ box-shadow:0 0 9px #00cfff55;
+ opacity:0;transform:translate(var(--x),var(--y)) rotate(360deg) scale(.1);
+ transition:transform 1s cubic-bezier(.15,.8,.2,1),opacity .7s;
+ cursor:pointer
+}
+.el.show{opacity:1;transform:translate(0,0) rotate(0) scale(1)}
+.el:hover{filter:brightness(1.7);box-shadow:0 0 22px cyan}
+.num{position:absolute;top:3px;left:4px;font-size:9px}
+.sym{font-size:18px;font-weight:bold;color:#fff}
+.name{font-size:7px;max-width:46px;overflow:hidden;white-space:nowrap}
+.noble{background:linear-gradient(135deg,#773fc1,#352052)}
+.alkali{background:linear-gradient(135deg,#b64f25,#63251f)}
+.earth{background:linear-gradient(135deg,#147b58,#123b43)}
+.nonmetal{background:linear-gradient(135deg,#087b9a,#123b65)}
+.lanth{background:linear-gradient(135deg,#a02c88,#462252)}
+.act{background:linear-gradient(135deg,#b42d54,#50182f)}
+#info{
+ margin:15px auto 25px;padding:18px;
+ border:1px solid #40cdeb;border-radius:15px;
+ max-width:600px;background:#071629dd;color:#bcefff
+}
+#info b{font-size:22px;color:#70f7ff}
+@media(max-width:900px){
+ #table{margin-left:8px;margin-right:8px}
+}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<h1>✦ VŨ TRỤ NGUYÊN TỐ ✦</h1>
+<p>118 nguyên tố thức tỉnh và hợp thành bảng tuần hoàn</p>
+<button onclick="summon()">✦ TRIỆU HỒI NGUYÊN TỐ</button>
+<button onclick="orbit()">⚛ QUỸ ĐẠO ELECTRON</button>
+<div class="wrap"><div id="table"></div></div>
+<div id="info">Chạm vào một nguyên tố để khám phá!</div>
+
+<script>
+const symbols=`
+H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar
+K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr
+Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe
+Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu
+Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn
+Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr
+Rf Db Sg Bh Hs Mt Ds Rg Cn Nh Fl Mc Lv Ts Og
+`.trim().split(/\s+/);
+
+const names=`
+Hydrogen Helium Lithium Beryllium Boron Carbon Nitrogen Oxygen Fluorine Neon
+Sodium Magnesium Aluminium Silicon Phosphorus Sulfur Chlorine Argon
+Potassium Calcium Scandium Titanium Vanadium Chromium Manganese Iron Cobalt Nickel Copper Zinc Gallium Germanium Arsenic Selenium Bromine Krypton
+Rubidium Strontium Yttrium Zirconium Niobium Molybdenum Technetium Ruthenium Rhodium Palladium Silver Cadmium Indium Tin Antimony Tellurium Iodine Xenon
+Caesium Barium Lanthanum Cerium Praseodymium Neodymium Promethium Samarium Europium Gadolinium Terbium Dysprosium Holmium Erbium Thulium Ytterbium Lutetium
+Hafnium Tantalum Tungsten Rhenium Osmium Iridium Platinum Gold Mercury Thallium Lead Bismuth Polonium Astatine Radon
+Francium Radium Actinium Thorium Protactinium Uranium Neptunium Plutonium Americium Curium Berkelium Californium Einsteinium Fermium Mendelevium Nobelium Lawrencium
+Rutherfordium Dubnium Seaborgium Bohrium Hassium Meitnerium Darmstadtium Ro
